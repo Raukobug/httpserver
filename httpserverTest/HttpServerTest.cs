@@ -15,10 +15,10 @@ namespace httpserverTest
         [TestMethod]
         public void TestGet()
         {
-            String line = HttpServer.GetFirstLine("GET /index.html HTTP/1.0");
+            String line = GetFirstLine("GET /index.html HTTP/1.0");
             Assert.AreEqual("HTTP/1.0 200 OK", line);
 
-            line = HttpServer.GetFirstLine("GET /fileDoesNotExist.txt HTTP/1.0");
+            line = GetFirstLine("GET /fileDoesNotExist.txt HTTP/1.0");
             Assert.AreEqual("HTTP/1.0 404 Not Found", line);
         }
 
@@ -26,28 +26,28 @@ namespace httpserverTest
         [TestMethod]
         public void TestGetIllegalRequest()
         {
-            String line = GetFirstLine("GET /file.txt HTTP 1.0");
+            String line = GetFirstLine("GET /index.html HTTP 1.0");
             Assert.AreEqual("HTTP/1.0 400 Illegal request", line);
         }
 
         [TestMethod]
         public void TestGetIllegalMethodName()
         {
-            String line = GetFirstLine("PLET /file.txt HTTP/1.0");
+            String line = GetFirstLine("PLET /index.html HTTP/1.0");
             Assert.AreEqual("HTTP/1.0 400 Illegal request", line);
         }
 
         [TestMethod]
         public void TestGetIllegalProtocol()
         {
-            String line = GetFirstLine("GET /file.txt HTTP/1.2");
+            String line = GetFirstLine("GET /index.html HTTP/1.2");
             Assert.AreEqual("HTTP/1.0 400 Illegal protocol", line);
         }
 
         [TestMethod]
         public void TestMethodNotImplemented()
         {
-            String line = GetFirstLine("POST /file.txt HTTP/1.0");
+            String line = GetFirstLine("POST /index.html HTTP/1.0");
             Assert.AreEqual("HTTP/1.0 200 xxx", line);
         }
 
@@ -58,7 +58,7 @@ namespace httpserverTest
         /// <returns></returns>
         private static String GetFirstLine(String request)
         {
-            TcpClient client = new TcpClient("localhost", 8080);
+            TcpClient client = new TcpClient("localhost", HttpServer.DefaultPort);
             NetworkStream networkStream = client.GetStream();
 
             StreamWriter toServer = new StreamWriter(networkStream, Encoding.UTF8);

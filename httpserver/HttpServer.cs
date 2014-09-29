@@ -15,85 +15,62 @@ namespace httpserver
         private static readonly string RootCatalog = Directory.GetCurrentDirectory();
         public void StartServer()
         {
-            //creates a server socket/listner/welcome socket
-            var serverSocket = new TcpListener(IPAddress.Any, DefaultPort);
-            serverSocket.Start();
-            while (true)
-            {
-                //creates a connectionSocket by accepting the connection request from the client
-                Socket connectionSocket = serverSocket.AcceptSocket();
-                Console.WriteLine("Server is activated");
-
-                //network stream for the connected client; to read from or write to
-
-                Stream ns = new NetworkStream(connectionSocket);
-                var sr = new StreamReader(ns, Encoding.UTF8);
-                var sw = new StreamWriter(ns) {AutoFlush = true};
-                string srtext = sr.ReadLine();
-                Console.Write(GetFirstLine(srtext));
-                string[] words = srtext.Split(' ');
-                string meh = words[1].Replace("/", "\\");
-                string path = RootCatalog + meh;
-                string text = "";
-                string serverrespons = @"
-                            HTTP/1.0 200 OK
-                            Connecetion: close
-                            Date: Dag, dagital måned år tid
-                            Server: Min egen super server
-                            Last-Modified: Dag, dagital måned år tid
-                            Content-Type text/html
-                            ";
-
-
-                //saves the lines read fromteh stream in a string variable and print it on the scren
-                try
+                //creates a server socket/listner/welcome socket
+                var serverSocket = new TcpListener(IPAddress.Any, DefaultPort);
+                serverSocket.Start();
+                while (true)
                 {
-                    if (File.Exists(path))
+                    //creates a connectionSocket by accepting the connection request from the client
+                    Socket connectionSocket = serverSocket.AcceptSocket();
+
+                    //network stream for the connected client; to read from or write to
+
+                    Stream ns = new NetworkStream(connectionSocket);
+                    var sr = new StreamReader(ns, Encoding.UTF8);
+                    var sw = new StreamWriter(ns) {AutoFlush = true};
+                    string srtext = sr.ReadLine();
+                    string[] words = srtext.Split(' ');
+                    string meh = words[1].Replace("/", "\\");
+                    string path = RootCatalog + meh;
+                    string text = "";
+                    string serverrespons = "";
+
+
+                    //saves the lines read fromteh stream in a string variable and print it on the scren
+                    try
                     {
-
-
-                        using (FileStream fs = File.OpenRead(path))
+                        if (File.Exists(path))
                         {
-                            byte[] b = new byte[1024];
-                            var temp = new UTF8Encoding(true);
-                            while (fs.Read(b, 0, b.Length) > 0)
+                            serverrespons = "HTTP/1.0 200 OK";
+                            using (FileStream fs = File.OpenRead(path))
                             {
-                                // Console.WriteLine(temp.GetString(b));
-                                text += temp.GetString(b);
+                                byte[] b = new byte[1024];
+                                var temp = new UTF8Encoding(true);
+                                while (fs.Read(b, 0, b.Length) > 0)
+                                {
+                                    text += temp.GetString(b);
+                                }
                             }
                         }
+                        else
+                        {
+                            serverrespons = "HTTP/1.0 404 Not Found";
+                            text = "HTTP/1.0 404 Not Found";
+                        }
+                        sw.Write(@text);
+                        //sw.Write(@serverrespons)
+                        ;
+
                     }
-                    else
+                    finally
                     {
-                        text = "Siden blev ikke fundet";
+                        Console.Write(serverrespons + "\n");
+                        ns.Close();
+                        connectionSocket.Close();
+
                     }
-                    sw.Write(@text);
-
                 }
-                finally
-                {
-                    Console.Write(serverrespons + "\n");
-                    ns.Close();
-                    connectionSocket.Close();
-
-                }
+                serverSocket.Stop();
             }
-            serverSocket.Stop();
-        }
-
-        public static string GetFirstLine(string message)
-        {
-            string[] words = message.Split(' ');
-            string replacebackspace = words[1].Replace("/", "\\");
-            string path = RootCatalog + replacebackspace;
-            if (File.Exists(path))
-            {
-                return "HTTP/1.0 200 OK";
-            }
-                return "HTTP/1.0 404 Not Found";
-        }
-
-
-
         }
     }
