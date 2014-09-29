@@ -11,14 +11,14 @@ namespace httpserverTest
     public class HttpServerTest
     {
         private const string CrLf = "\r\n";
-
+        private static readonly string RootCatalog = Directory.GetCurrentDirectory();
         [TestMethod]
         public void TestGet()
         {
-            String line = GetFirstLine("GET /file.txt HTTP/1.0");
+            String line = HttpServer.GetFirstLine("GET /index.html HTTP/1.0");
             Assert.AreEqual("HTTP/1.0 200 OK", line);
 
-            line = GetFirstLine("GET /fileDoesNotExist.txt HTTP/1.0");
+            line = HttpServer.GetFirstLine("GET /fileDoesNotExist.txt HTTP/1.0");
             Assert.AreEqual("HTTP/1.0 404 Not Found", line);
         }
 
@@ -58,7 +58,7 @@ namespace httpserverTest
         /// <returns></returns>
         private static String GetFirstLine(String request)
         {
-            TcpClient client = new TcpClient("localhost", HttpServer.DefaultPort);
+            TcpClient client = new TcpClient("localhost", 8080);
             NetworkStream networkStream = client.GetStream();
 
             StreamWriter toServer = new StreamWriter(networkStream, Encoding.UTF8);

@@ -18,20 +18,24 @@ namespace httpserver
             //creates a server socket/listner/welcome socket
             var serverSocket = new TcpListener(IPAddress.Any, DefaultPort);
             serverSocket.Start();
-            //creates a connectionSocket by accepting the connection request from the client
-            Socket connectionSocket = serverSocket.AcceptSocket();
-            Console.WriteLine("Server is activated");
+            while (true)
+            {
+                //creates a connectionSocket by accepting the connection request from the client
+                Socket connectionSocket = serverSocket.AcceptSocket();
+                Console.WriteLine("Server is activated");
 
-            //network stream for the connected client; to read from or write to
-            Stream ns = new NetworkStream(connectionSocket);
-            var sr = new StreamReader(ns,Encoding.UTF8);
-            var sw = new StreamWriter(ns) { AutoFlush = true };
+                //network stream for the connected client; to read from or write to
 
-            string[] words = sr.ReadLine().Split(' ');
-            string meh = words[1].Replace("/","\\");
-            string path = RootCatalog + meh;
-            string text = "";
-            string serverrespons = @"
+                Stream ns = new NetworkStream(connectionSocket);
+                var sr = new StreamReader(ns, Encoding.UTF8);
+                var sw = new StreamWriter(ns) {AutoFlush = true};
+                string srtext = sr.ReadLine();
+                Console.Write(GetFirstLine(srtext));
+                string[] words = srtext.Split(' ');
+                string meh = words[1].Replace("/", "\\");
+                string path = RootCatalog + meh;
+                string text = "";
+                string serverrespons = @"
                             HTTP/1.0 200 OK
                             Connecetion: close
                             Date: Dag, dagital måned år tid
@@ -41,39 +45,55 @@ namespace httpserver
                             ";
 
 
-            //saves the lines read fromteh stream in a string variable and print it on the scren
-            try
-            {
-                if (File.Exists(path))
+                //saves the lines read fromteh stream in a string variable and print it on the scren
+                try
                 {
-
-
-                    using (FileStream fs = File.OpenRead(path))
+                    if (File.Exists(path))
                     {
-                        byte[] b = new byte[1024];
-                        var temp = new UTF8Encoding(true);
-                        while (fs.Read(b, 0, b.Length) > 0)
+
+
+                        using (FileStream fs = File.OpenRead(path))
                         {
-                            // Console.WriteLine(temp.GetString(b));
-                            text += temp.GetString(b);
+                            byte[] b = new byte[1024];
+                            var temp = new UTF8Encoding(true);
+                            while (fs.Read(b, 0, b.Length) > 0)
+                            {
+                                // Console.WriteLine(temp.GetString(b));
+                                text += temp.GetString(b);
+                            }
                         }
                     }
+                    else
+                    {
+                        text = "Siden blev ikke fundet";
+                    }
+                    sw.Write(@text);
+
                 }
-                else
+                finally
                 {
-                    text = "Siden blev ikke fundet";
+                    Console.Write(serverrespons + "\n");
+                    ns.Close();
+                    connectionSocket.Close();
+
                 }
-                sw.Write(@text);
-                                    
             }
-            finally
+            serverSocket.Stop();
+        }
+
+        public static string GetFirstLine(string message)
+        {
+            string[] words = message.Split(' ');
+            string replacebackspace = words[1].Replace("/", "\\");
+            string path = RootCatalog + replacebackspace;
+            if (File.Exists(path))
             {
-                Console.Write(serverrespons + "\n");
-                ns.Close();
-                connectionSocket.Close();
-                serverSocket.Stop();
+                return "HTTP/1.0 200 OK";
             }
-            }
+                return "HTTP/1.0 404 Not Found";
+        }
+
+
 
         }
     }
