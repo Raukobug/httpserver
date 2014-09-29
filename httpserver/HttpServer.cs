@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
@@ -10,13 +11,17 @@ namespace httpserver
     {
         public static readonly int DefaultPort = 8080;
         private static readonly string RootCatalog = Directory.GetCurrentDirectory();
+        EventLog myLog = new EventLog();
         public void StartServer()
         {
+            myLog.Source = "MyServer";
             //creates a server socket/listner/welcome socket
             var serverSocket = new TcpListener(IPAddress.Any, DefaultPort);
             serverSocket.Start();
+            myLog.WriteEntry("Server startup.",EventLogEntryType.Information, 1);
 
-            while (true)
+            //As long no key has been pressed keep the server runing for one more entry.
+            while (Console.KeyAvailable == false)
             {
                 //creates a connectionSocket by accepting the connection request from the client
                 Socket connectionSocket = serverSocket.AcceptSocket();
@@ -25,7 +30,7 @@ namespace httpserver
                 Stream ns = new NetworkStream(connectionSocket);
                 var sr = new StreamReader(ns, Encoding.UTF8);
                 var sw = new StreamWriter(ns) { AutoFlush = true };
-
+                myLog.WriteEntry("Client request.", EventLogEntryType.Information, 2);
                 //formates the input form the stream to a usefull formate
                 string srtext = sr.ReadLine();
 
@@ -68,9 +73,12 @@ namespace httpserver
                         Console.Write(serverrespons + "\n");
                         ns.Close();
                         connectionSocket.Close();
+                        myLog.WriteEntry("Server respons.", EventLogEntryType.Information, 3);
                     }
                 }
             }
+            serverSocket.Stop();
+            myLog.WriteEntry("Server shutdown.", EventLogEntryType.Information, 4);
         }
     }
 }
