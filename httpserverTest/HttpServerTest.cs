@@ -11,7 +11,6 @@ namespace httpserverTest
     public class HttpServerTest
     {
         private const string CrLf = "\r\n";
-        private static readonly string RootCatalog = Directory.GetCurrentDirectory();
         [TestMethod]
         public void TestGet()
         {

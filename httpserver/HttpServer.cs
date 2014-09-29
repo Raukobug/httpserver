@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace httpserver
 {
@@ -15,33 +12,40 @@ namespace httpserver
         private static readonly string RootCatalog = Directory.GetCurrentDirectory();
         public void StartServer()
         {
-                //creates a server socket/listner/welcome socket
-                var serverSocket = new TcpListener(IPAddress.Any, DefaultPort);
-                serverSocket.Start();
-                while (true)
+            //creates a server socket/listner/welcome socket
+            var serverSocket = new TcpListener(IPAddress.Any, DefaultPort);
+            serverSocket.Start();
+
+            while (true)
+            {
+                //creates a connectionSocket by accepting the connection request from the client
+                Socket connectionSocket = serverSocket.AcceptSocket();
+
+                //network stream for the connected client; to read from or write to
+                Stream ns = new NetworkStream(connectionSocket);
+                var sr = new StreamReader(ns, Encoding.UTF8);
+                var sw = new StreamWriter(ns) { AutoFlush = true };
+
+                //formates the input form the stream to a usefull formate
+                string srtext = sr.ReadLine();
+
+                if (srtext != null)
                 {
-                    //creates a connectionSocket by accepting the connection request from the client
-                    Socket connectionSocket = serverSocket.AcceptSocket();
-
-                    //network stream for the connected client; to read from or write to
-
-                    Stream ns = new NetworkStream(connectionSocket);
-                    var sr = new StreamReader(ns, Encoding.UTF8);
-                    var sw = new StreamWriter(ns) {AutoFlush = true};
-                    string srtext = sr.ReadLine();
                     string[] words = srtext.Split(' ');
-                    string meh = words[1].Replace("/", "\\");
-                    string path = RootCatalog + meh;
+                    string getFile = words[1].Replace("/", "\\");
+                    string path = RootCatalog + getFile;
+
                     string text = "";
                     string serverrespons = "";
 
-
-                    //saves the lines read fromteh stream in a string variable and print it on the scren
+                    //If the file exists retun the file else return a error 404 Not Found
                     try
                     {
                         if (File.Exists(path))
                         {
                             serverrespons = "HTTP/1.0 200 OK";
+
+                            //Opens the file from the path and take each byte in the file to a new string.
                             using (FileStream fs = File.OpenRead(path))
                             {
                                 byte[] b = new byte[1024];
@@ -57,20 +61,16 @@ namespace httpserver
                             serverrespons = "HTTP/1.0 404 Not Found";
                             text = "HTTP/1.0 404 Not Found";
                         }
-                        sw.Write(@text);
-                        //sw.Write(@serverrespons)
-                        ;
-
                     }
                     finally
                     {
+                        sw.Write(@text);
                         Console.Write(serverrespons + "\n");
                         ns.Close();
                         connectionSocket.Close();
-
                     }
                 }
-                serverSocket.Stop();
             }
         }
     }
+}
