@@ -20,17 +20,13 @@ namespace httpserver
             //creates a connectionSocket by accepting the connection request from the client
             Socket connectionSocket = serverSocket.AcceptSocket();
             Console.WriteLine("Server is activated");
-
+            
             //network stream for the connected client; to read from or write to
             
             Stream ns = new NetworkStream(connectionSocket);
             var sr = new StreamWriter(ns);
-            sr.Write("Hello world");
             //saves the lines read fromteh stream in a string variable and print it on the scren
-            //while (true)
-            //{
-            //    sr.Write("Hello world");
-            //}
+
 
             Console.ReadKey();
             ns.Close();
