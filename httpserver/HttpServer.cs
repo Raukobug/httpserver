@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace httpserver
 {
@@ -18,62 +15,62 @@ namespace httpserver
             //creates a server socket/listner/welcome socket
             var serverSocket = new TcpListener(IPAddress.Any, DefaultPort);
             serverSocket.Start();
-            //creates a connectionSocket by accepting the connection request from the client
-            Socket connectionSocket = serverSocket.AcceptSocket();
-            Console.WriteLine("Server is activated");
 
-            //network stream for the connected client; to read from or write to
-            Stream ns = new NetworkStream(connectionSocket);
-            var sr = new StreamReader(ns,Encoding.UTF8);
-            var sw = new StreamWriter(ns) { AutoFlush = true };
-
-            string[] words = sr.ReadLine().Split(' ');
-            string meh = words[1].Replace("/","\\");
-            string path = RootCatalog + meh;
-            string text = "";
-            string serverrespons = @"
-                            HTTP/1.0 200 OK
-                            Connecetion: close
-                            Date: Dag, dagital måned år tid
-                            Server: Min egen super server
-                            Last-Modified: Dag, dagital måned år tid
-                            Content-Type text/html
-                            ";
-
-
-            //saves the lines read fromteh stream in a string variable and print it on the scren
-            try
+            while (true)
             {
-                if (File.Exists(path))
+                //creates a connectionSocket by accepting the connection request from the client
+                Socket connectionSocket = serverSocket.AcceptSocket();
+
+                //network stream for the connected client; to read from or write to
+                Stream ns = new NetworkStream(connectionSocket);
+                var sr = new StreamReader(ns, Encoding.UTF8);
+                var sw = new StreamWriter(ns) { AutoFlush = true };
+
+                //formates the input form the stream to a usefull formate
+                string srtext = sr.ReadLine();
+
+                if (srtext != null)
                 {
+                    string[] words = srtext.Split(' ');
+                    string getFile = words[1].Replace("/", "\\");
+                    string path = RootCatalog + getFile;
 
+                    string text = "";
+                    string serverrespons = "";
 
-                    using (FileStream fs = File.OpenRead(path))
+                    //If the file exists retun the file else return a error 404 Not Found
+                    try
                     {
-                        byte[] b = new byte[1024];
-                        var temp = new UTF8Encoding(true);
-                        while (fs.Read(b, 0, b.Length) > 0)
+                        if (File.Exists(path))
                         {
-                            // Console.WriteLine(temp.GetString(b));
-                            text += temp.GetString(b);
+                            serverrespons = "HTTP/1.0 200 OK";
+
+                            //Opens the file from the path and take each byte in the file to a new string.
+                            using (FileStream fs = File.OpenRead(path))
+                            {
+                                byte[] b = new byte[1024];
+                                var temp = new UTF8Encoding(true);
+                                while (fs.Read(b, 0, b.Length) > 0)
+                                {
+                                    text += temp.GetString(b);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            serverrespons = "HTTP/1.0 404 Not Found";
+                            text = "HTTP/1.0 404 Not Found";
                         }
                     }
+                    finally
+                    {
+                        sw.Write(@text);
+                        Console.Write(serverrespons + "\n");
+                        ns.Close();
+                        connectionSocket.Close();
+                    }
                 }
-                else
-                {
-                    text = "Siden blev ikke fundet";
-                }
-                sw.Write(@text);
-                                    
             }
-            finally
-            {
-                Console.Write(serverrespons + "\n");
-                ns.Close();
-                connectionSocket.Close();
-                serverSocket.Stop();
-            }
-            }
-
         }
     }
+}
