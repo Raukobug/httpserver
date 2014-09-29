@@ -23,8 +23,9 @@ namespace httpserver
 
             //network stream for the connected client; to read from or write to
             Stream ns = new NetworkStream(connectionSocket);
-            var sr = new StreamReader(ns);
+            var sr = new StreamReader(ns,Encoding.UTF8);
             var sw = new StreamWriter(ns) { AutoFlush = true };
+            const string text = "Hello Fucking World :(";
             //saves the lines read fromteh stream in a string variable and print it on the scren
             try
             {
@@ -37,20 +38,18 @@ namespace httpserver
                 </head>
 
                 <body>
-                Hello World
+                {0}
                 </body>
                 </html>
-                ");
+                ", text);
             }
             finally
             {
+                Console.Write(sr.ReadLine() + "\n");
                 ns.Close();
                 connectionSocket.Close();
                 serverSocket.Stop();
             }
-
-
-
 
         }
     }
