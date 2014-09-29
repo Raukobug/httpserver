@@ -12,6 +12,7 @@ namespace httpserver
     public class HttpServer
     {
         public static readonly int DefaultPort = 8080;
+        private static readonly string RootCatalog = Directory.GetCurrentDirectory();
         public void StartServer()
         {
             //creates a server socket/listner/welcome socket
@@ -25,33 +26,54 @@ namespace httpserver
             Stream ns = new NetworkStream(connectionSocket);
             var sr = new StreamReader(ns,Encoding.UTF8);
             var sw = new StreamWriter(ns) { AutoFlush = true };
-            const string text = "Hello Fucking World :(";
+
+            string[] words = sr.ReadLine().Split(' ');
+            string meh = words[1].Replace("/","\\");
+            string path = RootCatalog + meh;
+            string text = "";
+            string serverrespons = @"
+                            HTTP/1.0 200 OK
+                            Connecetion: close
+                            Date: Dag, dagital måned år tid
+                            Server: Min egen super server
+                            Last-Modified: Dag, dagital måned år tid
+                            Content-Type text/html
+                            ";
+
 
             //saves the lines read fromteh stream in a string variable and print it on the scren
             try
             {
-                sw.Write(@"
-                <!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
-                <html xmlns='http://www.w3.org/1999/xhtml'>
-                <head>
-                <meta http-equiv='Content-Type' content='text/html; charset=utf-8' />
-                <title>Untitled Document</title>
-                </head>
-            
-                <body>
-                {0}
-                </body>
-                </html>
-                ", text);
+                if (File.Exists(path))
+                {
+
+
+                    using (FileStream fs = File.OpenRead(path))
+                    {
+                        byte[] b = new byte[1024];
+                        var temp = new UTF8Encoding(true);
+                        while (fs.Read(b, 0, b.Length) > 0)
+                        {
+                            // Console.WriteLine(temp.GetString(b));
+                            text += temp.GetString(b);
+                        }
+                    }
+                }
+                else
+                {
+                    text = "Siden blev ikke fundet";
+                }
+                sw.Write(@text);
+                                    
             }
             finally
             {
-                Console.Write(sr.ReadLine() + "\n");
+                Console.Write(serverrespons + "\n");
                 ns.Close();
                 connectionSocket.Close();
                 serverSocket.Stop();
             }
+            }
 
         }
     }
-}
