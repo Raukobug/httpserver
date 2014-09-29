@@ -24,14 +24,17 @@ namespace httpserver
             //network stream for the connected client; to read from or write to
             
             Stream ns = new NetworkStream(connectionSocket);
-            var sr = new StreamWriter(ns);
-            sr.Write("Hello world");
+            var sw = new StreamWriter(ns);
+            var sr = new StreamReader(ns);
+            sw.Write("Hello world");
+
             //saves the lines read fromteh stream in a string variable and print it on the scren
             //while (true)
             //{
             //    sr.Write("Hello world");
             //}
-
+            
+            Console.Write(sr.ReadLine());
             Console.ReadKey();
             ns.Close();
             connectionSocket.Close();
