@@ -63,7 +63,7 @@ namespace httpserver
                         }
                         else
                         {
-                            serverrespons = "HTTP/1.0 404 Not Found";
+                            serverrespons = "HTTP/1.0 "+ text;
                             text = "HTTP/1.0 404 Not Found";
                         }
                     }
@@ -79,6 +79,13 @@ namespace httpserver
             }
             serverSocket.Stop();
             myLog.WriteEntry("Server shutdown.", EventLogEntryType.Information, 4);
+        }
+
+        public string ErrorHandler(int id)
+        {
+            string[,] error = { { "200", "OK" }, { "200", "OK" }, { "200", "OK" }, { "200", "OK" }, { "200", "OK" }, { "200", "OK" }, { "200", "OK" }, { "200", "OK" }, { "200", "OK" }, { "200", "OK" }, { "200", "OK" }, { "200", "OK" }, { "200", "OK" }, { "200", "OK" }, { "200", "OK" } };
+
+            return "";
         }
     }
 }
