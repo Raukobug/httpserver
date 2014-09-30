@@ -46,7 +46,9 @@ namespace httpserver
                     {
                         path = RootCatalog + "\\index.html";
                     }
+                    string extension = Path.GetExtension(path);
                     var sh = new StatusHandler(srtext,path);
+                    var cth = new ContentTypeHandler(extension);
                     string text = "";
                     string consoleText = sh.ServerRespons();
                     var hg = new HtmlGenerator(sh.ServerRespons(), Version);
@@ -79,8 +81,10 @@ namespace httpserver
                     }
                     finally
                     {
+                        //sw.Write(Version + sh.ServerRespons()); //UnitTest
                         sw.Write(text);
-                        Console.Write(consoleText + "\n");
+                       // Console.Write(srtext + "\n");
+                        Console.Write(consoleText + "\n" + cth.ContentTypeLookUp() + "\n");
                         ns.Close();
                         connectionSocket.Close();
                         _myLog.WriteEntry("Server respons: " + sh.ServerRespons(), EventLogEntryType.Information, 3);
