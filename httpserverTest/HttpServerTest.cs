@@ -14,40 +14,63 @@ namespace httpserverTest
         [TestMethod]
         public void TestGet()
         {
-            String line = GetFirstLine("GET /index.html HTTP/1.0");
-            Assert.AreEqual("HTTP/1.0 200 OK", line);
+            String line = GetFirstLine("GET /index.html HTTP/1.1");
+            Assert.AreEqual("HTTP/1.1 200 OK", line);
 
-            line = GetFirstLine("GET /fileDoesNotExist.txt HTTP/1.0");
-            Assert.AreEqual("HTTP/1.0 404 Not Found", line);
+            line = GetFirstLine("GET /fileDoesNotExist.txt HTTP/1.1");
+            Assert.AreEqual("HTTP/1.1 404 Not Found", line);
         }
 
 
         [TestMethod]
         public void TestGetIllegalRequest()
         {
-            String line = GetFirstLine("GET /index.html HTTP 1.0");
-            Assert.AreEqual("HTTP/1.0 400 Bad Request", line);
+            String line = GetFirstLine("GET /index.html HTTP 1.1");
+            Assert.AreEqual("HTTP/1.1 400 Bad Request", line);
         }
 
         [TestMethod]
         public void TestGetIllegalMethodName()
         {
-            String line = GetFirstLine("PLET /index.html HTTP/1.0");
-            Assert.AreEqual("HTTP/1.0 400 Bad Request", line);
+            String line = GetFirstLine("PLET /index.html HTTP/1.1");
+            Assert.AreEqual("HTTP/1.1 400 Bad Request", line);
         }
 
         [TestMethod]
         public void TestGetIllegalProtocol()
         {
             String line = GetFirstLine("GET /index.html HTTP/1.2");
-            Assert.AreEqual("HTTP/1.0 400 Bad Request", line);
+            Assert.AreEqual("HTTP/1.1 400 Bad Request", line);
         }
 
         [TestMethod]
         public void TestMethodNotImplemented()
         {
-            String line = GetFirstLine("POST /index.html HTTP/1.0");
-            Assert.AreEqual("HTTP/1.0 200 OK", line);
+            String line = GetFirstLine("POST /index.html HTTP/1.1");
+            Assert.AreEqual("HTTP/1.1 200 OK", line);
+        }
+
+        [TestMethod]
+        public void TestContentTypePng()
+        {
+            String line = GetFirstLine("GET /index.png HTTP/1.1");
+            Assert.AreEqual("HTTP/1.1 404 Not Found Content-Type: image/png", line);
+        }
+
+        [TestMethod]
+        public void TestContentTypeCss()
+        {
+            String line = GetFirstLine("GET /index.css HTTP/1.1");
+            Assert.AreEqual("HTTP/1.1 404 Not Found Content-Type: text/css", line);
+
+        }
+
+        [TestMethod]
+        public void TestContentTypeHtml()
+        {
+            String line = GetFirstLine("GET /index.html HTTP/1.1");
+            Assert.AreEqual("HTTP/1.1 200 OK Content-Type: text/html", line);
+
         }
 
         /// <summary>

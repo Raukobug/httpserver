@@ -12,7 +12,7 @@ namespace httpserver
         //Kommentar til at teste GitHub/Merging :)
         public static readonly int DefaultPort = 8080;
         private static readonly string RootCatalog = Directory.GetCurrentDirectory();
-        private const string Version = "HTTP/1.0 ";
+        private const string Version = "HTTP/1.1 "; //Change during unit test
 
         readonly EventLog _myLog = new EventLog();
         public void StartServer()
@@ -46,9 +46,9 @@ namespace httpserver
                     {
                         path = RootCatalog + "\\index.html";
                     }
-                    string extension = Path.GetExtension(path);
+                    string extension = Path.GetExtension(path); //Saves the extension of the path
                     var sh = new StatusHandler(srtext,path);
-                    var cth = new ContentTypeHandler(extension);
+                    var cth = new ContentTypeHandler(extension); //Gets the correct output for the HTTP response (ex .HTML = text/html)
                     string text = "";
                     string consoleText = sh.ServerRespons();
                     var hg = new HtmlGenerator(sh.ServerRespons(), Version);
@@ -81,9 +81,9 @@ namespace httpserver
                     }
                     finally
                     {
-                        //sw.Write(Version + sh.ServerRespons()); //UnitTest
-                        sw.Write(text);
-                       // Console.Write(srtext + "\n");
+                        sw.Write(consoleText + " " + cth.ContentTypeLookUp()); //UnitTest - Change depending on the unit test you want to run
+                       // sw.Write(text);
+                       //Console.Write(srtext + "\n"); //Prints the message the server gets from the client
                         Console.Write(consoleText + "\n" + cth.ContentTypeLookUp() + "\n");
                         ns.Close();
                         connectionSocket.Close();
