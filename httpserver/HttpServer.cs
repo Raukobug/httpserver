@@ -14,14 +14,14 @@ namespace httpserver
         private static readonly string RootCatalog = Directory.GetCurrentDirectory();
         private const string Version = "HTTP/1.0 ";
 
-        EventLog myLog = new EventLog();
+        readonly EventLog _myLog = new EventLog();
         public void StartServer()
         {
-            myLog.Source = "MyServer";
+            _myLog.Source = "MyServer";
             //creates a server socket/listner/welcome socket
             var serverSocket = new TcpListener(IPAddress.Any, DefaultPort);
             serverSocket.Start();
-            myLog.WriteEntry("Server startup.",EventLogEntryType.Information, 1);
+            _myLog.WriteEntry("Server startup.",EventLogEntryType.Information, 1);
 
             //As long no key has been pressed keep the server runing for one more entry.
             while (Console.KeyAvailable == false)
@@ -35,7 +35,7 @@ namespace httpserver
                 var sw = new StreamWriter(ns) { AutoFlush = true };
                 //formates the input form the stream to a usefull formate
                 string srtext = sr.ReadLine();
-                myLog.WriteEntry("Client request: " + srtext, EventLogEntryType.Information, 2);
+                _myLog.WriteEntry("Client request: " + srtext, EventLogEntryType.Information, 2);
 
                 if (srtext != null)
                 {
@@ -73,21 +73,22 @@ namespace httpserver
                         {
                             consoleText = Version + sh.ServerRespons();
                             text = hg.GetSite();
+
                         }
 
                     }
                     finally
                     {
-                        sw.Write(@text);
+                        sw.Write(text);
                         Console.Write(consoleText + "\n");
                         ns.Close();
                         connectionSocket.Close();
-                        myLog.WriteEntry("Server respons: " + sh.ServerRespons(), EventLogEntryType.Information, 3);
+                        _myLog.WriteEntry("Server respons: " + sh.ServerRespons(), EventLogEntryType.Information, 3);
                     }
                 }
             }
             serverSocket.Stop();
-            myLog.WriteEntry("Server shutdown.", EventLogEntryType.Information, 4);
+            _myLog.WriteEntry("Server shutdown.", EventLogEntryType.Information, 4);
         }
 
 
