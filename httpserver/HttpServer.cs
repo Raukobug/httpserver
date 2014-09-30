@@ -9,6 +9,7 @@ namespace httpserver
 {
     public class HttpServer
     {
+        //Kommentar til at teste GitHub/Merging :)
         public static readonly int DefaultPort = 8080;
         private static readonly string RootCatalog = Directory.GetCurrentDirectory();
         EventLog myLog = new EventLog();
