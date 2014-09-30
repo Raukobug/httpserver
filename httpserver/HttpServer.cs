@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq.Expressions;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -15,16 +16,17 @@ namespace httpserver
         private const string Version = "HTTP/1.1 "; //Change during unit test
 
         readonly EventLog _myLog = new EventLog();
+        TcpListener serverSocket = new TcpListener(IPAddress.Any, DefaultPort);
         public void StartServer()
         {
             _myLog.Source = "MyServer";
             //creates a server socket/listner/welcome socket
-            var serverSocket = new TcpListener(IPAddress.Any, DefaultPort);
+            
             serverSocket.Start();
             _myLog.WriteEntry("Server startup.",EventLogEntryType.Information, 1);
 
             //As long no key has been pressed keep the server runing for one more entry.
-            while (Console.KeyAvailable == false)
+            while (true)
             {
                 //creates a connectionSocket by accepting the connection request from the client
                 Socket connectionSocket = serverSocket.AcceptSocket();
@@ -81,20 +83,30 @@ namespace httpserver
                     }
                     finally
                     {
+                        
                         sw.Write(consoleText + " " + cth.ContentTypeLookUp()); //UnitTest - Change depending on the unit test you want to run
                        // sw.Write(text);
                        //Console.Write(srtext + "\n"); //Prints the message the server gets from the client
-                        Console.Write(consoleText + "\n" + cth.ContentTypeLookUp() + "\n");
+                        Console.Write(consoleText + "\n" + cth.ContentTypeLookUp() + "\n" + File.GetLastWriteTime(path));
                         ns.Close();
                         connectionSocket.Close();
                         _myLog.WriteEntry("Server respons: " + sh.ServerRespons(), EventLogEntryType.Information, 3);
                     }
                 }
             }
-            serverSocket.Stop();
-            _myLog.WriteEntry("Server shutdown.", EventLogEntryType.Information, 4);
+            
         }
 
+        public void ServerStop()
+        {
+            while (Console.KeyAvailable == false)
+            {
+
+            }
+            _myLog.WriteEntry("Server shutdown.", EventLogEntryType.Information, 4);
+
+                serverSocket.Stop();
+        }
 
     }
 }

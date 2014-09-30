@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 
 namespace httpserver
 {
@@ -7,7 +8,7 @@ namespace httpserver
         static void Main()
         {
             var httpServer = new HttpServer();
-            Parallel.Invoke(httpServer.StartServer);
+            Parallel.Invoke(httpServer.StartServer, httpServer.ServerStop);
         }
     }
 }
