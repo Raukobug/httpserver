@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Net;
 using System.Net.Sockets;
 using System.Text;
 
@@ -26,7 +27,7 @@ namespace httpserver
             if (_request != null)
             {
                 string[] words = _request.Split(' ');
-                string getFile = words[1].Replace("/", "\\");
+                string getFile = WebUtility.UrlDecode(words[1].Replace("/", "\\"));
                 _path = RootCatalog + getFile;
                 if (getFile == "\\")
                 {
@@ -37,7 +38,6 @@ namespace httpserver
                 var sh = new StatusHandler(_request, _path);
                 var cth = new ContentTypeHandler(extension); //Gets the correct output for the HTTP response (ex .HTML = text/html)
                 string content = "";
-                var hg = new HtmlGenerator(sh.ServerRespons(), VersionHttp);
                 //If the file exists retun the file else return a error 404 Not Found
                 string fileLastEdit = Convert.ToString(File.GetLastWriteTime(_path));
                 string timeRightNow = DateTime.Today.ToLongDateString() + " " + DateTime.Now.ToLongTimeString();
@@ -57,12 +57,6 @@ namespace httpserver
                             }
                         }
                     }
-                    else
-                    {
-                        content = hg.GetSite();
-
-                    }
-
                 }
                 finally
                 {
@@ -72,10 +66,9 @@ namespace httpserver
                     sendRespons.Respons();
                     _ns.Close();
                     _connectionSocket.Close();
-
                     //Console.Write(srtext + "\n"); //Prints the message the server gets from the client
+                    Console.Write(_path);
                     Console.Write(httpRespons +  "\nDate today: " + timeRightNow + "\nFile last change: " + fileLastEdit + "\n");
-                    //_myLog.WriteEntry("Server respons: " + sh.ServerRespons(), EventLogEntryType.Information, 3);
                 }
             
         }

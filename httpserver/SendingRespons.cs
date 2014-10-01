@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Diagnostics;
+using System.IO;
 using System.Net.Sockets;
 
 namespace httpserver
@@ -8,12 +9,14 @@ namespace httpserver
         private readonly NetworkStream _ns;
         private readonly string _httpRespons;
         private readonly string _content;
+        readonly EventLog _myLog = new EventLog();
 
         public SendingRespons(NetworkStream ns, string content, string httpRespons)
         {
             _ns = ns;
             _content = content;
             _httpRespons = httpRespons;
+            _myLog.Source = "MyServer";
         }
 
         public void Respons()
@@ -21,6 +24,7 @@ namespace httpserver
             var sw = new StreamWriter(_ns) { AutoFlush = true };
             sw.Write(_httpRespons);
             sw.Write(_content);
+            _myLog.WriteEntry("Server respons: " + _httpRespons, EventLogEntryType.Information, 3);
         }
     }
 }

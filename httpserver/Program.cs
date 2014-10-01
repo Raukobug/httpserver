@@ -7,7 +7,7 @@ namespace httpserver
         static void Main()
         {
             var httpServer = new HttpServer();
-            Parallel.Invoke(httpServer.StartServer, httpServer.ServerStop);
+            Parallel.Invoke(httpServer.StartServer, httpServer.StopServer);
         }
     }
 }
