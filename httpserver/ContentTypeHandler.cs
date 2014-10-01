@@ -2,8 +2,8 @@
 {
     class ContentTypeHandler
     {
-        private string _extension;
-
+        private readonly string _extension;
+        readonly Config _config = new Config();
         public ContentTypeHandler(string extension)
         {
             _extension = extension;
@@ -52,10 +52,7 @@
             {
                 return outPut + "application/x-java-archive";
             }
-
-            return outPut + "application/octet-stream";
-
-
+            return outPut + _config.DefaultContentType;
         }
     }
 }

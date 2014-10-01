@@ -8,8 +8,9 @@ namespace httpserver
 {
     class HandlingRequest
     {
+        readonly Config _config = new Config();
         private readonly string _request;
-        private static readonly string RootCatalog = Directory.GetCurrentDirectory();
+        private static string _rootCatalog;
         private const string VersionHttp = "HTTP/1.1"; //Change during unit test
         private readonly NetworkStream _ns;
         private readonly Socket _connectionSocket;
@@ -20,6 +21,7 @@ namespace httpserver
             _request = request;
             _ns = ns;
             _connectionSocket = connectionSocket;
+            _rootCatalog = _config.RootCatalog;
         }
 
         public void Handling()
@@ -28,10 +30,10 @@ namespace httpserver
             {
                 string[] words = _request.Split(' ');
                 string getFile = WebUtility.UrlDecode(words[1].Replace("/", "\\"));
-                _path = RootCatalog + getFile;
+                _path = _rootCatalog + getFile;
                 if (getFile == "\\")
                 {
-                    _path = RootCatalog + "\\index.html";
+                    _path = _rootCatalog + "\\" + _config.WelcomeFile;
                 }
             }
                 string extension = Path.GetExtension(_path); //Saves the extension of the path
@@ -67,7 +69,6 @@ namespace httpserver
                     _ns.Close();
                     _connectionSocket.Close();
                     //Console.Write(srtext + "\n"); //Prints the message the server gets from the client
-                    Console.Write(_path);
                     Console.Write(httpRespons +  "\nDate today: " + timeRightNow + "\nFile last change: " + fileLastEdit + "\n");
                 }
             
