@@ -114,5 +114,15 @@ namespace httpserver
             _serverSocket.Stop();
         }
 
+        public void Stop()
+        {
+            _myLog.WriteEntry("Server shutdown.", EventLogEntryType.Information, 4);
+            var client = new TcpClient("localhost", DefaultPort);
+            _listener = false;
+            _ns.Close();
+            _connectionSocket.Close();
+            client.Close();
+            _serverSocket.Stop();
+        }
     }
 }
