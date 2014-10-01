@@ -84,8 +84,8 @@ namespace httpserver
                     finally
                     {
                         
-                        sw.Write(consoleText + " " + cth.ContentTypeLookUp()); //UnitTest - Change depending on the unit test you want to run
-                       // sw.Write(text);
+                        //sw.Write(consoleText + " " + cth.ContentTypeLookUp()); //UnitTest - Change depending on the unit test you want to run
+                        sw.Write(text);
                        //Console.Write(srtext + "\n"); //Prints the message the server gets from the client
                         Console.Write(consoleText + "\n" + cth.ContentTypeLookUp() + "\n" + File.GetLastWriteTime(path));
                         ns.Close();
