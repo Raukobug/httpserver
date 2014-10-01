@@ -9,7 +9,7 @@ namespace httpserver
     {
         private readonly string _request;
         private static readonly string RootCatalog = Directory.GetCurrentDirectory();
-        private const string VersionHttp = "HTTP/1.0 "; //Change during unit test
+        private const string VersionHttp = "HTTP/1.1"; //Change during unit test
         private readonly NetworkStream _ns;
         private readonly Socket _connectionSocket;
         private string _path;
@@ -36,8 +36,7 @@ namespace httpserver
                 string extension = Path.GetExtension(_path); //Saves the extension of the path
                 var sh = new StatusHandler(_request, _path);
                 var cth = new ContentTypeHandler(extension); //Gets the correct output for the HTTP response (ex .HTML = text/html)
-                string text = "";
-                string consoleText = sh.ServerRespons();
+                string content = "";
                 var hg = new HtmlGenerator(sh.ServerRespons(), VersionHttp);
                 //If the file exists retun the file else return a error 404 Not Found
                 string fileLastEdit = Convert.ToString(File.GetLastWriteTime(_path));
@@ -47,7 +46,6 @@ namespace httpserver
                     //If no get is set take look for the index.html.
                     if (File.Exists(_path))
                     {
-                        consoleText = VersionHttp + sh.ServerRespons();
                         //Opens the file from the path and take each byte in the file to a new string.
                         using (FileStream fs = File.OpenRead(_path))
                         {
@@ -55,28 +53,28 @@ namespace httpserver
                             var temp = new UTF8Encoding(true);
                             while (fs.Read(b, 0, b.Length) > 0)
                             {
-                                text += temp.GetString(b);
+                                content += temp.GetString(b);
                             }
                         }
                     }
                     else
                     {
-                        consoleText = VersionHttp + sh.ServerRespons();
-                        text = hg.GetSite();
+                        content = hg.GetSite();
 
                     }
 
                 }
                 finally
                 {
-                    var sendRespons = new SendingRespons(_ns, "", "");
-                    Console.Write(consoleText + "\n" + cth.ContentTypeLookUp() + "\n" + "Content-Lenght: " + text.Length);
+                    var httpRespons = VersionHttp + " " + sh.ServerRespons() + "\n" + cth.ContentTypeLookUp() + "\n" + "Content-Lenght: " + content.Length;
+                    var sendRespons = new SendingRespons(_ns, content, httpRespons);
+                    //Console.Write(consoleText + "\n" + cth.ContentTypeLookUp() + "\n" + "Content-Lenght: " + text.Length);
                     sendRespons.Respons();
                     _ns.Close();
                     _connectionSocket.Close();
 
                     //Console.Write(srtext + "\n"); //Prints the message the server gets from the client
-                    Console.Write(consoleText + "\n" + cth.ContentTypeLookUp() + "\nDate today: " + timeRightNow + "\nContent-Lenght: " + text.Length + "\nFile last change: " + fileLastEdit + "\n");
+                    Console.Write(httpRespons +  "\nDate today: " + timeRightNow + "\nFile last change: " + fileLastEdit + "\n");
                     //_myLog.WriteEntry("Server respons: " + sh.ServerRespons(), EventLogEntryType.Information, 3);
                 }
             

@@ -85,7 +85,7 @@ namespace httpserverTest
         [ClassCleanup]
         public static void StopServer()
         {
-            //_server.Stop();
+            _server.Stop();
         }
         /// <summary>
         /// Private helper method
