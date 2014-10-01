@@ -12,7 +12,7 @@ namespace httpserver
         //Kommentar til at teste GitHub/Merging :)
         public static readonly int DefaultPort = 8080;
         private static readonly string RootCatalog = Directory.GetCurrentDirectory();
-        private const string Version = "HTTP/1.1 "; //Change during unit test
+        private const string Version = "HTTP/1.0 "; //Change during unit test
         private Socket _connectionSocket;
         private Stream _ns;
         private bool _listener = true;
@@ -49,6 +49,10 @@ namespace httpserver
                     {
                         path = RootCatalog + "\\index.html";
                     }
+                    if (path.Contains("%22"))
+                    {
+                        path = path.Replace("%22", "");
+                    }
                     string extension = Path.GetExtension(path); //Saves the extension of the path
                     var sh = new StatusHandler(srtext, path);
                     var cth = new ContentTypeHandler(extension); //Gets the correct output for the HTTP response (ex .HTML = text/html)
@@ -63,11 +67,10 @@ namespace httpserver
                         if (File.Exists(path))
                         {
                             consoleText = Version + sh.ServerRespons();
-
                             //Opens the file from the path and take each byte in the file to a new string.
                             using (FileStream fs = File.OpenRead(path))
                             {
-                                var b = new byte[1024];
+                                var b = new byte[fs.Length];
                                 var temp = new UTF8Encoding(true);
                                 while (fs.Read(b, 0, b.Length) > 0)
                                 {
@@ -85,11 +88,12 @@ namespace httpserver
                     }
                     finally
                     {
+                        sw.Write(consoleText + "\n" + cth.ContentTypeLookUp()+ "\n" + "Content-Lenght: " + text.Length);
                         string timeRightNow = DateTime.Today.ToLongDateString() + " " + DateTime.Now.ToLongTimeString();
                         //sw.Write(consoleText + " " + cth.ContentTypeLookUp()); //UnitTest - Change depending on the unit test you want to run
                         sw.Write(text);
                         //Console.Write(srtext + "\n"); //Prints the message the server gets from the client
-                        Console.Write(consoleText + "\n" + cth.ContentTypeLookUp() + "\nDate today: " + timeRightNow + "\nContent-Lenght: " + text.Length + "\nFile last change: " + fileLastEdit);
+                        Console.Write(consoleText + "\n" + cth.ContentTypeLookUp() + "\nDate today: " + timeRightNow + "\nContent-Lenght: " + text.Length + "\nFile last change: " + fileLastEdit + "\n");
                         _ns.Close();
                         _connectionSocket.Close();
                         _myLog.WriteEntry("Server respons: " + sh.ServerRespons(), EventLogEntryType.Information, 3);
@@ -103,15 +107,15 @@ namespace httpserver
         {
             while (Console.KeyAvailable == false)
             {
-
+                
             }
-            _myLog.WriteEntry("Server shutdown.", EventLogEntryType.Information, 4);
             var client = new TcpClient("localhost", DefaultPort);
             _listener = false;
             _ns.Close();
             _connectionSocket.Close();
             client.Close();
             _serverSocket.Stop();
+            _myLog.WriteEntry("Server shutdown.", EventLogEntryType.Information, 4);
         }
 
         public void Stop()

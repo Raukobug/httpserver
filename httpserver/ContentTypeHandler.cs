@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace httpserver
+﻿namespace httpserver
 {
     class ContentTypeHandler
     {
@@ -18,6 +11,10 @@ namespace httpserver
 
         public string ContentTypeLookUp()
         {
+            if (_extension.Contains("%22"))
+            {
+                _extension = _extension.Replace("%22", "");
+            }
             string outPut = "Content-Type: ";
             if (_extension == ".html")
             {
@@ -35,7 +32,7 @@ namespace httpserver
             {
                 return outPut + "image/gif";
             }
-            if (_extension == ".jpeg")
+            if (_extension == ".jpg")
             {
                 return outPut + "image/jpeg";
             }
