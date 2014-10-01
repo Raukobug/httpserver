@@ -11,10 +11,6 @@
 
         public string ContentTypeLookUp()
         {
-            if (_extension.Contains("%22"))
-            {
-                _extension = _extension.Replace("%22", "");
-            }
             string outPut = "Content-Type: ";
             if (_extension == ".html")
             {
