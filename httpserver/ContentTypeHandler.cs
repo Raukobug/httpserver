@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace httpserver
+﻿namespace httpserver
 {
     class ContentTypeHandler
     {
@@ -35,7 +28,7 @@ namespace httpserver
             {
                 return outPut + "image/gif";
             }
-            if (_extension == ".jpeg")
+            if (_extension == ".jpg")
             {
                 return outPut + "image/jpeg";
             }
