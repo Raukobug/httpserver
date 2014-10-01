@@ -69,7 +69,6 @@ namespace httpserver
                     //Console.Write(srtext + "\n"); //Prints the message the server gets from the client
                     Console.Write(_path);
                     Console.Write(httpRespons +  "\nDate today: " + timeRightNow + "\nFile last change: " + fileLastEdit + "\n");
-                    //_myLog.WriteEntry("Server respons: " + sh.ServerRespons(), EventLogEntryType.Information, 3);
                 }
             
         }

@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace httpserver
@@ -17,6 +15,7 @@ namespace httpserver
 
         readonly EventLog _myLog = new EventLog();
         readonly TcpListener _serverSocket = new TcpListener(IPAddress.Any, DefaultPort);
+        readonly TcpListener _stopSocket = new TcpListener(IPAddress.Any, 8081);
         public void StartServer()
         {
             _myLog.Source = "MyServer";
@@ -39,20 +38,12 @@ namespace httpserver
 
         }
 
-        public void ServerStop()
+        public void StopServer()
         {
-            while (Console.KeyAvailable == false)
-            {
-                
-            }
-// ReSharper disable CoVariantArrayConversion
-            Task.WaitAll(_tlist.ToArray());
-// ReSharper restore CoVariantArrayConversion
-            _listener = false;
-            var client = new TcpClient("localhost", DefaultPort);
-            client.Close();
-            _serverSocket.Stop();
-            //_myLog.WriteEntry("Server shutdown.", EventLogEntryType.Information, 4);
+            _stopSocket.Start();
+            _stopSocket.AcceptSocket();
+            _stopSocket.Stop();
+            Stop();
         }
 
         public void Stop()
@@ -64,7 +55,7 @@ namespace httpserver
             var client = new TcpClient("localhost", DefaultPort);
             client.Close();
             _serverSocket.Stop();
-            //_myLog.WriteEntry("Server shutdown.", EventLogEntryType.Information, 4);
+            _myLog.WriteEntry("Server shutdown.", EventLogEntryType.Information, 4);
         }
     }
 }
