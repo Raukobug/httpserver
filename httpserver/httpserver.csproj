@@ -44,7 +44,6 @@
   <ItemGroup>
     <Compile Include="ContentTypeHandler.cs" />
     <Compile Include="HandlingRequest.cs" />
-    <Compile Include="HtmlGenerator.cs" />
     <Compile Include="HttpServer.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
