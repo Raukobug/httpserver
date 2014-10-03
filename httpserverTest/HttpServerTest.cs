@@ -94,7 +94,7 @@ namespace httpserverTest
         /// <returns></returns>
         private static String GetFirstLine(String request)
         {
-            var client = new TcpClient("localhost", HttpServer.DefaultPort);
+            var client = new TcpClient("localhost", _server.DefaultPort);
             NetworkStream networkStream = client.GetStream();
 
             var toServer = new StreamWriter(networkStream, Encoding.UTF8);

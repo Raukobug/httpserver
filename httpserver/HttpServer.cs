@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 
 namespace httpserver
@@ -15,9 +16,11 @@ namespace httpserver
         readonly EventLog _myLog = new EventLog();
         private readonly TcpListener _serverSocket;
         private readonly TcpListener _stopSocket;
+        public int DefaultPort;
 
         public HttpServer()
         {
+            DefaultPort = _config.ServerPort;
             _serverSocket = new TcpListener(IPAddress.Any, _config.ServerPort);
             _stopSocket = new TcpListener(IPAddress.Any, _config.ShutdownPort);
         }
