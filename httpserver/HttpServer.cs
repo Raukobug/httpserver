@@ -24,6 +24,7 @@ namespace httpserver
             _serverSocket = new TcpListener(IPAddress.Any, _config.ServerPort);
             _stopSocket = new TcpListener(IPAddress.Any, _config.ShutdownPort);
         }
+
         public void StartServer()
         {
             _myLog.Source = "MyServer"; //Sets the name of the log

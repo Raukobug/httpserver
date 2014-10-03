@@ -8,44 +8,35 @@ namespace httpserver
     {
         private readonly NetworkStream _ns;
         private readonly string _httpResponse;
-        private readonly string _content;
         private readonly string _path;
         readonly EventLog _myLog = new EventLog();
 
-<<<<<<< HEAD:httpserver/SendingRespons.cs
-        public SendingRespons(NetworkStream ns, string content, string httpRespons, string path)
+        public SendingResponse(NetworkStream ns, string httpResponse, string path)
         {
             _ns = ns;
-            _content = content;
-            _httpRespons = httpRespons;
-            _path = path;
-=======
-        public SendingResponse(NetworkStream ns, string content, string httpResponse)
-        {
-            _ns = ns;
-            _content = content;
             _httpResponse = httpResponse;
->>>>>>> a851d2034967aceb98c8f622341908cbd3d6f1e0:httpserver/SendingResponse.cs
+            _path = path;
             _myLog.Source = "MyServer";
         }
 
         public void Response()
         {
             var sw = new StreamWriter(_ns) { AutoFlush = true };
-<<<<<<< HEAD:httpserver/SendingRespons.cs
-
-            sw.Write(_httpRespons);
-            //sw.Write(_content);
-            using (FileStream file = File.OpenRead(_path))
-            {
-                file.CopyTo(_ns);
-            }
-            _myLog.WriteEntry("Server respons: " + _httpRespons, EventLogEntryType.Information, 3);
-=======
             sw.Write(_httpResponse);
-            sw.Write(_content);
+<<<<<<< HEAD
+            if (File.Exists(_path))
+=======
+
+            using (FileStream file = File.OpenRead(_path))
+>>>>>>> b8cfe59c257d26dc84a9b32d41d41517b29465cd
+            {
+                using (FileStream file = File.OpenRead(_path))
+                {
+                    file.CopyTo(_ns);
+                }
+            }
+
             _myLog.WriteEntry("Server response: " + _httpResponse, EventLogEntryType.Information, 3);
->>>>>>> a851d2034967aceb98c8f622341908cbd3d6f1e0:httpserver/SendingResponse.cs
         }
     }
 }
