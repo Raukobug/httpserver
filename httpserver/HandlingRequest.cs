@@ -15,6 +15,7 @@ namespace httpserver
         private readonly NetworkStream _ns;
         private readonly Socket _connectionSocket;
         private string _path;
+        private string _httpRespons;
 
         public HandlingRequest(string request, NetworkStream ns, Socket connectionSocket)
         {
@@ -58,18 +59,22 @@ namespace httpserver
                                 content += temp.GetString(b);
                             }
                         }
+                        _httpRespons = VersionHttp + " " + sh.ServerRespons() + "\r\n" + cth.ContentTypeLookUp() + "\r\n" + "Content-Lenght: " + content.Length + "\r\n\r\n";
+                        var sendRespons = new SendingRespons(_ns, content, _httpRespons, _path);
+                        sendRespons.Respons();
+                    }
+                    else
+                    {
+                        _httpRespons = VersionHttp + " " + sh.ServerRespons() + "\r\n" + cth.ContentTypeLookUp() + "\r\n" + "Content-Lenght: " + content.Length + "\r\n\r\n";
+                        var sendRespons = new SendingRespons(_ns, content, _httpRespons, _path);
+                        sendRespons.Respons();
                     }
                 }
                 finally
                 {
-                    var httpRespons = VersionHttp + " " + sh.ServerRespons() + "\n" + cth.ContentTypeLookUp() + "\n" + "Content-Lenght: " + content.Length;
-                    var sendRespons = new SendingRespons(_ns, content, httpRespons);
-                    //Console.Write(consoleText + "\n" + cth.ContentTypeLookUp() + "\n" + "Content-Lenght: " + text.Length);
-                    sendRespons.Respons();
                     _ns.Close();
                     _connectionSocket.Close();
-                    //Console.Write(srtext + "\n"); //Prints the message the server gets from the client
-                    Console.Write(httpRespons +  "\nDate today: " + timeRightNow + "\nFile last change: " + fileLastEdit + "\n");
+                    Console.Write(_httpRespons + "\nDate today: " + timeRightNow + "\nFile last change: " + fileLastEdit + "\n");
                 }
             
         }
