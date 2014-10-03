@@ -20,12 +20,12 @@ namespace httpserver
             var ns = new NetworkStream(_connectionSocket);
             var sr = new StreamReader(ns, Encoding.UTF8);
 
-            //formates the input form the stream to a usefull formate
+            //formats the input from the stream to a useful format
             string clientRequest = sr.ReadLine();
             _myLog.WriteEntry("Client request: " + clientRequest, EventLogEntryType.Information, 2);
             var hr = new HandlingRequest(clientRequest, ns, _connectionSocket);
             hr.Handling();
-            return 0;
+            return 0; //Returns 0 so that the Task.WaitAll in HttpServer knows when this thread is done
         }
     }
 }

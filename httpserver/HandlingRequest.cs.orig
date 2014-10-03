@@ -57,7 +57,6 @@ namespace httpserver
                         {
                             content += temp.GetString(b); //Adds to the end of the string
                         }
-                    }
                         _httpRespons = VersionHttp + " " + sh.ServerRespons() + "\r\n" + cth.ContentTypeLookUp() + "\r\n" + "Content-Lenght: " + content.Length + "\r\n\r\n";
                         var sendRespons = new SendingRespons(_ns, content, _httpRespons, _path);
                         sendRespons.Respons();
@@ -67,14 +66,28 @@ namespace httpserver
                         _httpRespons = VersionHttp + " " + sh.ServerRespons() + "\r\n" + cth.ContentTypeLookUp() + "\r\n" + "Content-Lenght: " + content.Length + "\r\n\r\n";
                         var sendRespons = new SendingRespons(_ns, content, _httpRespons, _path);
                         sendRespons.Respons();
+                    }
                 }
+<<<<<<< HEAD
+                finally
+                {
+                    _ns.Close();
+                    _connectionSocket.Close();
+                    Console.Write(_httpRespons + "\nDate today: " + timeRightNow + "\nFile last change: " + fileLastEdit + "\n");
+                }
+            
+=======
             }
             finally
             {
+                var httpResponse = VersionHttp + " " + sh.ServerResponse() + "\n" + cth.ContentTypeLookUp() + "\n" + "Content-Lenght: " + content.Length;
+                var sendResponse = new SendingResponse(_ns, content, httpResponse);
+                sendResponse.Response();
                 _ns.Close();
                 _connectionSocket.Close();
                 Console.Write(httpResponse + "\nDate today: " + timeRightNow + "\nFile last change: " + fileLastEdit + "\n");
             }
+>>>>>>> a851d2034967aceb98c8f622341908cbd3d6f1e0
         }
     }
 }

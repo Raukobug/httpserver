@@ -11,7 +11,7 @@
 
         public string ContentTypeLookUp()
         {
-            string outPut = "Content-Type: ";
+            const string outPut = "Content-Type: ";
             if (_extension == ".html")
             {
                 return outPut + "text/html";
