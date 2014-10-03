@@ -23,12 +23,14 @@ namespace httpserver
         {
             var sw = new StreamWriter(_ns) { AutoFlush = true };
             sw.Write(_httpResponse);
-
-            //sw.Write(_content);
-            using (FileStream file = File.OpenRead(_path))
+            if (File.Exists(_path))
             {
-                file.CopyTo(_ns);
+                using (FileStream file = File.OpenRead(_path))
+                {
+                    file.CopyTo(_ns);
+                }
             }
+
             _myLog.WriteEntry("Server response: " + _httpResponse, EventLogEntryType.Information, 3);
         }
     }

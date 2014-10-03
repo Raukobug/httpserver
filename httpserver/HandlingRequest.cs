@@ -73,7 +73,7 @@ namespace httpserver
             {
                 _ns.Close();
                 _connectionSocket.Close();
-                //Console.Write(_httpResponse + "\nDate today: " + timeRightNow + "\nFile last change: " + fileLastEdit + "\n");
+                Console.Write(_httpResponse + "\nDate today: " + timeRightNow + "\nFile last change: " + fileLastEdit + "\n");
             }
         }
     }
