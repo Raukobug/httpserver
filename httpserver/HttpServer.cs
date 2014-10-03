@@ -8,14 +8,19 @@ namespace httpserver
 {
     public class HttpServer
     {
-        //Kommentar til at teste GitHub/Merging :)
-        public static readonly int DefaultPort = 8080;
+        readonly Config _config = new Config();
         private bool _listener = true;
         private readonly List<Task<int>> _tlist = new List<Task<int>>();
 
         readonly EventLog _myLog = new EventLog();
-        readonly TcpListener _serverSocket = new TcpListener(IPAddress.Any, DefaultPort);
-        readonly TcpListener _stopSocket = new TcpListener(IPAddress.Any, 8081);
+        private readonly TcpListener _serverSocket;
+        private readonly TcpListener _stopSocket;
+
+        public HttpServer()
+        {
+            _serverSocket = new TcpListener(IPAddress.Any, _config.ServerPort);
+            _stopSocket = new TcpListener(IPAddress.Any, _config.ShutdownPort);
+        }
         public void StartServer()
         {
             _myLog.Source = "MyServer";
@@ -52,7 +57,7 @@ namespace httpserver
             Task.WaitAll(_tlist.ToArray());
 // ReSharper restore CoVariantArrayConversion
             _listener = false;
-            var client = new TcpClient("localhost", DefaultPort);
+            var client = new TcpClient("localhost", _config.ServerPort);
             client.Close();
             _serverSocket.Stop();
             _myLog.WriteEntry("Server shutdown.", EventLogEntryType.Information, 4);
