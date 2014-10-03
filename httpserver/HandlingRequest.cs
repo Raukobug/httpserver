@@ -15,7 +15,7 @@ namespace httpserver
         private readonly NetworkStream _ns;
         private readonly Socket _connectionSocket;
         private string _path;
-        private string _httpRespons;
+        private string _httpResponse;
 
         public HandlingRequest(string request, NetworkStream ns, Socket connectionSocket)
         {
@@ -58,22 +58,22 @@ namespace httpserver
                             content += temp.GetString(b); //Adds to the end of the string
                         }
                     }
-                        _httpRespons = VersionHttp + " " + sh.ServerRespons() + "\r\n" + cth.ContentTypeLookUp() + "\r\n" + "Content-Lenght: " + content.Length + "\r\n\r\n";
-                        var sendRespons = new SendingRespons(_ns, content, _httpRespons, _path);
-                        sendRespons.Respons();
+                        _httpResponse = VersionHttp + " " + sh.ServerResponse() + "\r\n" + cth.ContentTypeLookUp() + "\r\n" + "Content-Lenght: " + content.Length + "\r\n\r\n";
+                        var sendRespons = new SendingResponse(_ns, _httpResponse, _path);
+                        sendRespons.Response();
                     }
                     else
                     {
-                        _httpRespons = VersionHttp + " " + sh.ServerRespons() + "\r\n" + cth.ContentTypeLookUp() + "\r\n" + "Content-Lenght: " + content.Length + "\r\n\r\n";
-                        var sendRespons = new SendingRespons(_ns, content, _httpRespons, _path);
-                        sendRespons.Respons();
+                        _httpResponse = VersionHttp + " " + sh.ServerResponse() + "\r\n" + cth.ContentTypeLookUp() + "\r\n" + "Content-Lenght: " + content.Length + "\r\n\r\n";
+                        var sendRespons = new SendingResponse(_ns, _httpResponse, _path);
+                        sendRespons.Response();
                 }
             }
             finally
             {
                 _ns.Close();
                 _connectionSocket.Close();
-                Console.Write(httpResponse + "\nDate today: " + timeRightNow + "\nFile last change: " + fileLastEdit + "\n");
+                //Console.Write(_httpResponse + "\nDate today: " + timeRightNow + "\nFile last change: " + fileLastEdit + "\n");
             }
         }
     }

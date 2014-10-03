@@ -8,14 +8,12 @@ namespace httpserver
     {
         private readonly NetworkStream _ns;
         private readonly string _httpResponse;
-        private readonly string _content;
         private readonly string _path;
         readonly EventLog _myLog = new EventLog();
 
-        public SendingResponse(NetworkStream ns, string content, string httpResponse)
+        public SendingResponse(NetworkStream ns, string httpResponse, string path)
         {
             _ns = ns;
-            _content = content;
             _httpResponse = httpResponse;
             _path = path;
             _myLog.Source = "MyServer";
@@ -31,6 +29,7 @@ namespace httpserver
             {
                 file.CopyTo(_ns);
             }
+            _myLog.WriteEntry("Server response: " + _httpResponse, EventLogEntryType.Information, 3);
         }
     }
 }
