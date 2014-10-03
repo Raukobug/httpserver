@@ -59,7 +59,6 @@ namespace httpserver
                 WelcomeFile = _myList[5];
                 file.Close();
             }
-
         }
     }
 }

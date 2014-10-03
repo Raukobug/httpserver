@@ -58,15 +58,15 @@ namespace httpserver
                             content += temp.GetString(b); //Adds to the end of the string
                         }
                     }
-                        _httpResponse = VersionHttp + " " + sh.ServerResponse() + "\r\n" + cth.ContentTypeLookUp() + "\r\n" + "Content-Lenght: " + content.Length + "\r\n\r\n";
-                        var sendRespons = new SendingResponse(_ns, _httpResponse, _path);
-                        sendRespons.Response();
-                    }
-                    else
-                    {
-                        _httpResponse = VersionHttp + " " + sh.ServerResponse() + "\r\n" + cth.ContentTypeLookUp() + "\r\n" + "Content-Lenght: " + content.Length + "\r\n\r\n";
-                        var sendRespons = new SendingResponse(_ns, _httpResponse, _path);
-                        sendRespons.Response();
+                    _httpResponse = VersionHttp + " " + sh.ServerResponse() + "\r\n" + cth.ContentTypeLookUp() + "\r\n" + "Content-Lenght: " + content.Length + "\r\n\r\n";
+                    var sendRespons = new SendingResponse(_ns, _httpResponse, _path);
+                    sendRespons.Response();
+                }
+                else
+                {
+                    _httpResponse = VersionHttp + " " + sh.ServerResponse() + "\r\n" + cth.ContentTypeLookUp() + "\r\n" + "Content-Lenght: " + content.Length + "\r\n\r\n";
+                    var sendRespons = new SendingResponse(_ns, _httpResponse, _path);
+                    sendRespons.Response();
                 }
             }
             finally
