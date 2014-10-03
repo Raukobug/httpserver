@@ -4,27 +4,27 @@ using System.Net.Sockets;
 
 namespace httpserver
 {
-    class SendingRespons
+    class SendingResponse
     {
         private readonly NetworkStream _ns;
-        private readonly string _httpRespons;
+        private readonly string _httpResponse;
         private readonly string _content;
         readonly EventLog _myLog = new EventLog();
 
-        public SendingRespons(NetworkStream ns, string content, string httpRespons)
+        public SendingResponse(NetworkStream ns, string content, string httpResponse)
         {
             _ns = ns;
             _content = content;
-            _httpRespons = httpRespons;
+            _httpResponse = httpResponse;
             _myLog.Source = "MyServer";
         }
 
-        public void Respons()
+        public void Response()
         {
             var sw = new StreamWriter(_ns) { AutoFlush = true };
-            sw.Write(_httpRespons);
+            sw.Write(_httpResponse);
             sw.Write(_content);
-            _myLog.WriteEntry("Server respons: " + _httpRespons, EventLogEntryType.Information, 3);
+            _myLog.WriteEntry("Server response: " + _httpResponse, EventLogEntryType.Information, 3);
         }
     }
 }

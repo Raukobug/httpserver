@@ -11,7 +11,7 @@ namespace httpserver
         readonly Config _config = new Config();
         private readonly string _request;
         private static string _rootCatalog;
-        private const string VersionHttp = "HTTP/1.1"; //Change during unit test
+        private const string VersionHttp = "HTTP/1.0"; //Change to 1.1 during unit test
         private readonly NetworkStream _ns;
         private readonly Socket _connectionSocket;
         private string _path;
@@ -29,50 +29,45 @@ namespace httpserver
             if (_request != null)
             {
                 string[] words = _request.Split(' ');
-                string getFile = WebUtility.UrlDecode(words[1].Replace("/", "\\"));
+                string getFile = WebUtility.UrlDecode(words[1].Replace("/", "\\")); //Decodes ex. %20 to space
                 _path = _rootCatalog + getFile;
                 if (getFile == "\\")
                 {
                     _path = _rootCatalog + "\\" + _config.WelcomeFile;
                 }
             }
-                string extension = Path.GetExtension(_path); //Saves the extension of the path
-                var sh = new StatusHandler(_request, _path);
-                var cth = new ContentTypeHandler(extension); //Gets the correct output for the HTTP response (ex .HTML = text/html)
-                string content = "";
-                //If the file exists retun the file else return a error 404 Not Found
-                string fileLastEdit = Convert.ToString(File.GetLastWriteTime(_path));
-                string timeRightNow = DateTime.Today.ToLongDateString() + " " + DateTime.Now.ToLongTimeString();
-                try
+            string extension = Path.GetExtension(_path); //Saves the extension of the path
+            var sh = new StatusHandler(_request, _path);
+            var cth = new ContentTypeHandler(extension); //Gets the correct output for the HTTP response (ex .HTML = text/html)
+            string content = ""; //Used to store content later.
+            string fileLastEdit = Convert.ToString(File.GetLastWriteTime(_path));
+            string timeRightNow = DateTime.Today.ToLongDateString() + " " + DateTime.Now.ToLongTimeString(); //Gets Date and Time
+            try
+            {
+                //If no get is set, look for the index.html.
+                if (File.Exists(_path))
                 {
-                    //If no get is set take look for the index.html.
-                    if (File.Exists(_path))
+                    //Opens the file from the path and puts each byte in the file into a new string.
+                    using (FileStream fs = File.OpenRead(_path))
                     {
-                        //Opens the file from the path and take each byte in the file to a new string.
-                        using (FileStream fs = File.OpenRead(_path))
+                        var b = new byte[fs.Length];
+                        var temp = new UTF8Encoding(true);
+                        while (fs.Read(b, 0, b.Length) > 0)
                         {
-                            var b = new byte[fs.Length];
-                            var temp = new UTF8Encoding(true);
-                            while (fs.Read(b, 0, b.Length) > 0)
-                            {
-                                content += temp.GetString(b);
-                            }
+                            content += temp.GetString(b); //Adds to the end of the string
                         }
                     }
                 }
-                finally
-                {
-                    var httpRespons = VersionHttp + " " + sh.ServerRespons() + "\n" + cth.ContentTypeLookUp() + "\n" + "Content-Lenght: " + content.Length;
-                    var sendRespons = new SendingRespons(_ns, content, httpRespons);
-                    //Console.Write(consoleText + "\n" + cth.ContentTypeLookUp() + "\n" + "Content-Lenght: " + text.Length);
-                    sendRespons.Respons();
-                    _ns.Close();
-                    _connectionSocket.Close();
-                    //Console.Write(srtext + "\n"); //Prints the message the server gets from the client
-                    Console.Write(httpRespons +  "\nDate today: " + timeRightNow + "\nFile last change: " + fileLastEdit + "\n");
-                }
-            
+            }
+            finally
+            {
+                var httpResponse = VersionHttp + " " + sh.ServerResponse() + "\n" + cth.ContentTypeLookUp() + "\n" + "Content-Lenght: " + content.Length;
+                var sendResponse = new SendingResponse(_ns, content, httpResponse);
+                sendResponse.Response();
+                _ns.Close();
+                _connectionSocket.Close();
+                Console.Write(httpResponse + "\nDate today: " + timeRightNow + "\nFile last change: " + fileLastEdit + "\n");
+            }
         }
-
     }
 }

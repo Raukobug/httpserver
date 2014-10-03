@@ -17,15 +17,17 @@ namespace httpserver
 
         public Config()
         {
+            //If file doesn't exist, create it with default values
+            //Else read from file and set the values
             if (!File.Exists(Path))
             {
                 FileStream file = File.Create(Path);
                 file.Close();
                 TextWriter tw = new StreamWriter(Path);
-                tw.WriteLine("ServerPort="+ServerPort);
+                tw.WriteLine("ServerPort=" + ServerPort);
                 tw.WriteLine("RootCatalog=Default");
-                tw.WriteLine("ShutdownPort="+ShutdownPort);
-                tw.WriteLine("DefaultContentType="+DefaultContentType);
+                tw.WriteLine("ShutdownPort=" + ShutdownPort);
+                tw.WriteLine("DefaultContentType=" + DefaultContentType);
                 tw.WriteLine("ShowCatalogContent=true");
                 tw.WriteLine("WelcomeFile=index.html");
                 tw.Close();
@@ -57,7 +59,7 @@ namespace httpserver
                 WelcomeFile = _myList[5];
                 file.Close();
             }
-            
+
         }
     }
 }

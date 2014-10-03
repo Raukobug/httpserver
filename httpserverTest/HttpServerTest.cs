@@ -30,7 +30,6 @@ namespace httpserverTest
             Assert.AreEqual("HTTP/1.1 404 Not Found", line);
         }
 
-
         [TestMethod]
         public void TestGetIllegalRequest()
         {
@@ -71,7 +70,6 @@ namespace httpserverTest
         {
             String line = GetFirstLine("GET /index.css HTTP/1.1");
             Assert.AreEqual("HTTP/1.1 404 Not Found Content-Type: text/css", line);
-
         }
 
         [TestMethod]
@@ -79,7 +77,6 @@ namespace httpserverTest
         {
             String line = GetFirstLine("GET /index.html HTTP/1.1");
             Assert.AreEqual("HTTP/1.1 200 OK Content-Type: text/html", line);
-
         }
 
         [ClassCleanup]
@@ -87,11 +84,7 @@ namespace httpserverTest
         {
             _server.Stop();
         }
-        /// <summary>
-        /// Private helper method
-        /// </summary>
-        /// <param name="request"></param>
-        /// <returns></returns>
+
         private static String GetFirstLine(String request)
         {
             var client = new TcpClient("localhost", _server.DefaultPort);
@@ -108,9 +101,6 @@ namespace httpserverTest
             fromServer.Close();
             client.Close();
             return firstline;
-
         }
-
-
     }
 }

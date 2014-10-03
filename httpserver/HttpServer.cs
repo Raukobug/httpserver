@@ -26,24 +26,19 @@ namespace httpserver
         }
         public void StartServer()
         {
-            _myLog.Source = "MyServer";
-            //creates a server socket/listner/welcome socket
+            _myLog.Source = "MyServer"; //Sets the name of the log
+            _serverSocket.Start();  //creates a server socket/listner/welcome socket
+            _myLog.WriteEntry("Server startup.", EventLogEntryType.Information, 1);
 
-            _serverSocket.Start();
-            _myLog.WriteEntry("Server startup.",EventLogEntryType.Information, 1);
-
-            //As long no key has been pressed keep the server runing for one more entry.
+            //As long no key has been pressed keep the server running for one more entry.
             while (_listener)
             {
                 //creates a connectionSocket by accepting the connection request from the client
                 var connectionSocket = _serverSocket.AcceptSocket();
-                    var rr = new ReadingRequest(connectionSocket);
+                var rr = new ReadingRequest(connectionSocket);
 
-                    _tlist.Add(Task.Run(() => rr.SocketHandler()));   
-
-                //network stream for the connected client; to read from or write to
+                _tlist.Add(Task.Run(() => rr.SocketHandler()));
             }
-
         }
 
         public void StopServer()
@@ -56,9 +51,9 @@ namespace httpserver
 
         public void Stop()
         {
-// ReSharper disable CoVariantArrayConversion
+            // ReSharper disable CoVariantArrayConversion
             Task.WaitAll(_tlist.ToArray());
-// ReSharper restore CoVariantArrayConversion
+            // ReSharper restore CoVariantArrayConversion
             _listener = false;
             var client = new TcpClient("localhost", _config.ServerPort);
             client.Close();
